@@ -1,51 +1,76 @@
 # 🔍 Comparador Liga Magic
 
-Aplicação web para comparar automaticamente um **Deck (TXT)** com sua **Coleção (XLS - padrão LigaMagic)**.
+Aplicação web feita em **Python + Streamlit** para comparar:
 
-A ferramenta verifica carta por carta e informa:
-
-- ❌ Quais cartas do deck NÃO existem na coleção
-- ✔ Quais cartas existem na coleção
-- 📊 Resumo total da comparação
+- 📄 Deck (TXT) vs Coleção (XLS)
+- 📊 Coleção (XLS) vs Coleção (XLS)
 
 ---
 
 ## 🎯 Por que esse projeto existe?
 
-Várias vezes nós estamos em grupos onde a pessoa manda a coleção e fica difícil filtrar manualmente carta por carta que precisamos.
+Várias vezes estamos em grupos de WhatsApp onde alguém envia a coleção exportada da LigaMagic.
 
-Fazer essa comparação manualmente é:
+Filtrar manualmente carta por carta para descobrir se temos algo que precisamos é demorado e pouco eficiente.
 
-- Demorado
-- Sujeito a erro
-- Cansativo
-
-Esse aplicativo resolve exatamente esse problema de forma automática e instantânea.
+Este aplicativo resolve exatamente esse problema.
 
 ---
 
-## 🚀 Como usar
+# 🚀 Funcionalidades
 
-Acesse a aplicação online e faça upload de:
+## 🔁 1) Deck (TXT) vs Coleção (XLS)
 
-- 📘 Arquivo da Coleção (.xls) exportado da LigaMagic
-- 📗 Arquivo do Deck (.txt) exportado da LigaMagic
+Permite verificar:
 
-O sistema faz a comparação imediatamente.
+- Quais cartas do deck você já possui
+- Quais cartas faltam na sua coleção
+- Resumo total da comparação
 
 ---
 
-## 📘 Como gerar o arquivo da Coleção (Excel)
+## 🔁 2) Coleção vs Coleção
+
+Permite comparar duas coleções e identificar:
+
+- Cartas que existem em ambas
+- Cartas que existem na Coleção A mas não na B
+
+---
+
+# 🧠 Inteligência do sistema
+
+✔ Detecta automaticamente se a planilha usa:
+- `Card (PT)`
+- `Card (EN)`
+
+✔ Ignora quantidade do TXT (ex: `4 Lightning Bolt` → considera apenas o nome)
+
+✔ Permite incluir ou ignorar registros com **Extras**
+
+✔ Cartas com Extras:
+- Ficam no final da lista
+- Aparecem no formato:  
+  `Nome da Carta (Foil)`
+- São exibidas em **verde**
+
+✔ Ordenação alfabética automática
+
+---
+
+# 📥 Como gerar os arquivos na LigaMagic
+
+## 📊 Para gerar a Coleção (Excel)
 
 1. Vá até **Coleção**
 2. Clique em **Exportar**
-3. Em **Configurações de exportação** selecione:
+3. Em **Configurações de exportação**, selecione:
    - **Padrão LigaMagic XLS**
-4. Gere e salve o arquivo
+4. Salve o arquivo
 
 ---
 
-## 📗 Como gerar o arquivo do Deck (TXT)
+## 📄 Para gerar o Deck (TXT)
 
 1. Vá até o seu **Deck**
 2. Clique em **Exportar**
@@ -55,31 +80,47 @@ O sistema faz a comparação imediatamente.
 
 ---
 
-## ⚙️ Regras da Comparação
+# 🟢 Extras (Foil, Promo, etc)
 
-- A quantidade de cartas é ignorada
-- A comparação é exata (evita falso positivo como `Charge` vs `Inspired Charge`)
-- Pode opcionalmente ignorar linhas que possuem conteúdo na coluna `Extras` (Cartas Foil e etc..)
-- Resultados são ordenados alfabeticamente
+Você pode escolher:
+
+- ✅ Incluir registros com Extras
+- ❌ Ignorar registros com Extras
+
+Quando incluídos:
+
+- Eles aparecem em verde
+- Ficam no final da listagem
+- Mostram a informação entre parênteses
 
 ---
 
-## 🛠 Tecnologias Utilizadas
+# 🌐 Como usar online (sem instalar nada)
 
-- Python
+O projeto pode ser acessado em:
+
+👉 https://comparadorligamagic.streamlit.app
+
+---
+
+# 🛠 Tecnologias utilizadas
+
+- Python 3
 - Streamlit
 - Pandas
+- OpenPyXL
 
 ---
 
-## 💡 Possíveis Melhorias Futuras
+# 📌 Objetivo
 
-- Exportar resultado em Excel
-- Melhorias de performance para coleções grandes
-- Interface aprimorada
+Tornar a comparação de coleções da LigaMagic:
+
+- Rápida
+- Visual
+- Simples
+- Sem precisar baixar ou instalar nada
 
 ---
 
-## 📄 Licença
-
-Projeto de uso livre.
+Desenvolvido para facilitar a vida da comunidade Magic 🇧🇷
