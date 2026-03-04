@@ -37,7 +37,7 @@ with st.expander("📗 Como gerar o arquivo do Deck (TXT)", expanded=False):
 st.divider()
 
 # =============================
-# MODO DE COMPARAÇÃO
+# MODO
 # =============================
 
 modo = st.radio(
@@ -59,7 +59,7 @@ st.divider()
 
 
 # =============================
-# FUNÇÕES AUXILIARES
+# FUNÇÕES
 # =============================
 
 def normalizar(texto: str) -> str:
@@ -82,22 +82,27 @@ def extrair_nomes_excel(arquivo_excel, coluna_preferida=None):
     df = pd.read_excel(arquivo_excel, dtype=str, engine="openpyxl")
     df = df.fillna("")
 
-    if not ANALISAR_EXTRAS and "Extras" in df.columns:
-        df = df[df["Extras"].str.strip() == ""]
-
     coluna_nome = obter_coluna_nome(df, coluna_preferida)
 
     if not coluna_nome:
         st.error("Coluna 'Card (PT)' ou 'Card (EN)' não encontrada.")
         return []
 
-    nomes = [
-        normalizar(nome)
-        for nome in df[coluna_nome].tolist()
-        if str(nome).strip()
-    ]
+    registros = []
 
-    return nomes
+    for _, row in df.iterrows():
+        nome = str(row[coluna_nome]).strip()
+        if not nome:
+            continue
+
+        extra = str(row["Extras"]).strip() if "Extras" in df.columns else ""
+
+        if not ANALISAR_EXTRAS and extra:
+            continue
+
+        registros.append((normalizar(nome), extra))
+
+    return registros
 
 
 def extrair_nomes_txt(txt_file):
@@ -117,12 +122,34 @@ def extrair_nomes_txt(txt_file):
 
 
 def comparar_lista(lista_base, lista_comparacao):
-    set_comparacao = set(lista_comparacao)
+    set_comparacao = set([n for n, _ in lista_comparacao])
 
-    encontrados = sorted(set([n for n in lista_base if n in set_comparacao]))
-    nao_encontrados = sorted(set([n for n in lista_base if n not in set_comparacao]))
+    encontrados = []
+    nao_encontrados = []
+
+    for nome in lista_base:
+        if nome in set_comparacao:
+            extra = next((e for n, e in lista_comparacao if n == nome), "")
+            encontrados.append((nome, extra))
+        else:
+            nao_encontrados.append(nome)
+
+    # Ordena: primeiro sem extra, depois com extra
+    encontrados.sort(key=lambda x: (x[1] != "", x[0]))
+    nao_encontrados = sorted(set(nao_encontrados))
 
     return encontrados, nao_encontrados
+
+
+def exibir_encontrados(lista):
+    for nome, extra in lista:
+        if extra:
+            st.markdown(
+                f"<span style='color:green; font-weight:600'>{nome} ({extra})</span>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.write(nome)
 
 
 # =============================
@@ -152,8 +179,8 @@ if modo == "Deck (TXT) vs Coleção (XLS)":
         lista_excel_pt = extrair_nomes_excel(excel_file, "Card (PT)")
         lista_excel_en = extrair_nomes_excel(excel_file, "Card (EN)")
 
-        intersecao_pt = len(set(lista_txt) & set(lista_excel_pt))
-        intersecao_en = len(set(lista_txt) & set(lista_excel_en))
+        intersecao_pt = len(set(lista_txt) & set([n for n, _ in lista_excel_pt]))
+        intersecao_en = len(set(lista_txt) & set([n for n, _ in lista_excel_en]))
 
         if intersecao_en > intersecao_pt:
             lista_excel = lista_excel_en
@@ -172,7 +199,7 @@ if modo == "Deck (TXT) vs Coleção (XLS)":
 
         with col2:
             st.subheader("✔ Encontrados na coleção")
-            st.write(encontrados)
+            exibir_encontrados(encontrados)
 
         st.divider()
         st.markdown("### 📊 Resumo")
@@ -202,7 +229,10 @@ else:  # Coleção vs Coleção
         lista_a = extrair_nomes_excel(excel_a)
         lista_b = extrair_nomes_excel(excel_b)
 
-        encontrados, nao_encontrados = comparar_lista(lista_a, lista_b)
+        encontrados, nao_encontrados = comparar_lista(
+            [n for n, _ in lista_a],
+            lista_b
+        )
 
         st.divider()
 
@@ -214,4 +244,4 @@ else:  # Coleção vs Coleção
 
         with col2:
             st.subheader("✔ Existem em ambas as coleções")
-            st.write(encontrados)
+            exibir_encontrados(encontrados)
