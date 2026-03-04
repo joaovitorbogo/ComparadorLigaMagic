@@ -20,7 +20,7 @@ with st.expander("📘 Como gerar o arquivo da Coleção (Excel)", expanded=Fals
     2. Clique em **Exportar**
     3. Em **Configurações de exportação** selecione:
        - **Padrão LigaMagic XLS**
-    4. Gere o arquivo e salve no seu computador
+    4. Gere o arquivo e salve no seu dispositivo
     """)
 
 with st.expander("📗 Como gerar o arquivo do Deck (TXT)", expanded=False):
@@ -31,7 +31,7 @@ with st.expander("📗 Como gerar o arquivo do Deck (TXT)", expanded=False):
     2. Clique em **Exportar**
     3. Selecione:
        - **Arquivo de texto**
-    4. Salve o arquivo no seu computador
+    4. Salve o arquivo no seu dispositivo
     """)
 
 st.divider()
