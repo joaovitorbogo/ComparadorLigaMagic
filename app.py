@@ -34,24 +34,26 @@ def normalizar(texto: str) -> str:
     return " ".join(texto.lower().strip().split())
 
 
-def obter_coluna_nome(df):
+def obter_coluna_nome(df, preferencia=None):
+    if preferencia and preferencia in df.columns:
+        return preferencia
+
     if "Card (PT)" in df.columns:
         return "Card (PT)"
-    elif "Card (EN)" in df.columns:
+    if "Card (EN)" in df.columns:
         return "Card (EN)"
-    else:
-        return None
+
+    return None
 
 
-def extrair_nomes_excel(arquivo_excel):
+def extrair_nomes_excel(arquivo_excel, coluna_preferida=None):
     df = pd.read_excel(arquivo_excel, dtype=str, engine="openpyxl")
     df = df.fillna("")
 
-    if not ANALISAR_EXTRAS:
-        if "Extras" in df.columns:
-            df = df[df["Extras"].str.strip() == ""]
+    if not ANALISAR_EXTRAS and "Extras" in df.columns:
+        df = df[df["Extras"].str.strip() == ""]
 
-    coluna_nome = obter_coluna_nome(df)
+    coluna_nome = obter_coluna_nome(df, coluna_preferida)
 
     if not coluna_nome:
         st.error("Coluna 'Card (PT)' ou 'Card (EN)' não encontrada.")
@@ -112,8 +114,21 @@ if modo == "Deck (TXT) vs Coleção (XLS)":
     )
 
     if excel_file and txt_file:
-        lista_excel = extrair_nomes_excel(excel_file)
+
+        # Primeiro extrai TXT
         lista_txt = extrair_nomes_txt(txt_file)
+
+        # Testa automaticamente qual coluna do Excel combina melhor
+        lista_excel_pt = extrair_nomes_excel(excel_file, "Card (PT)")
+        lista_excel_en = extrair_nomes_excel(excel_file, "Card (EN)")
+
+        intersecao_pt = len(set(lista_txt) & set(lista_excel_pt))
+        intersecao_en = len(set(lista_txt) & set(lista_excel_en))
+
+        if intersecao_en > intersecao_pt:
+            lista_excel = lista_excel_en
+        else:
+            lista_excel = lista_excel_pt
 
         encontrados, nao_encontrados = comparar_lista(lista_txt, lista_excel)
 
@@ -153,6 +168,7 @@ else:  # Coleção vs Coleção
     )
 
     if excel_a and excel_b:
+
         lista_a = extrair_nomes_excel(excel_a)
         lista_b = extrair_nomes_excel(excel_b)
 
@@ -169,9 +185,3 @@ else:  # Coleção vs Coleção
         with col2:
             st.subheader("✔ Existem em ambas as coleções")
             st.write(encontrados)
-
-        st.divider()
-        st.markdown("### 📊 Resumo")
-        st.write(f"Total na Coleção A: {len(lista_a)}")
-        st.write(f"Exclusivas da A: {len(nao_encontrados)}")
-        st.write(f"Presentes em ambas: {len(encontrados)}")
