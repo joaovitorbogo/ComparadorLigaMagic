@@ -8,10 +8,6 @@ st.subheader("Compare Decks e Coleções da LigaMagic")
 
 st.divider()
 
-# =============================
-# MODO DE COMPARAÇÃO
-# =============================
-
 modo = st.radio(
     "Selecione o tipo de comparação:",
     (
@@ -38,23 +34,34 @@ def normalizar(texto: str) -> str:
     return " ".join(texto.lower().strip().split())
 
 
+def obter_coluna_nome(df):
+    if "Card (PT)" in df.columns:
+        return "Card (PT)"
+    elif "Card (EN)" in df.columns:
+        return "Card (EN)"
+    else:
+        return None
+
+
 def extrair_nomes_excel(arquivo_excel):
     df = pd.read_excel(arquivo_excel, dtype=str, engine="openpyxl")
     df = df.fillna("")
 
     if not ANALISAR_EXTRAS:
-        if "Extras" not in df.columns:
-            st.error("Coluna 'Extras' não encontrada no Excel.")
-            return []
-        df = df[df["Extras"].str.strip() == ""]
+        if "Extras" in df.columns:
+            df = df[df["Extras"].str.strip() == ""]
 
-    todas_celulas = df.astype(str).values.flatten()
+    coluna_nome = obter_coluna_nome(df)
 
-    nomes = []
-    for celula in todas_celulas:
-        celula = normalizar(celula)
-        if celula:
-            nomes.append(celula)
+    if not coluna_nome:
+        st.error("Coluna 'Card (PT)' ou 'Card (EN)' não encontrada.")
+        return []
+
+    nomes = [
+        normalizar(nome)
+        for nome in df[coluna_nome].tolist()
+        if str(nome).strip()
+    ]
 
     return nomes
 
@@ -76,26 +83,10 @@ def extrair_nomes_txt(txt_file):
 
 
 def comparar_lista(lista_base, lista_comparacao):
-    encontrados = []
-    nao_encontrados = []
+    set_comparacao = set(lista_comparacao)
 
-    for nome in lista_base:
-        palavras_base = nome.split()
-        encontrou = False
-
-        for outro in lista_comparacao:
-            palavras_outro = outro.split()
-            if len(palavras_base) == len(palavras_outro) and nome == outro:
-                encontrou = True
-                break
-
-        if encontrou:
-            encontrados.append(nome)
-        else:
-            nao_encontrados.append(nome)
-
-    encontrados = sorted(set(encontrados))
-    nao_encontrados = sorted(set(nao_encontrados))
+    encontrados = sorted(set([n for n in lista_base if n in set_comparacao]))
+    nao_encontrados = sorted(set([n for n in lista_base if n not in set_comparacao]))
 
     return encontrados, nao_encontrados
 
