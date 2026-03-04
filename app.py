@@ -51,7 +51,7 @@ modo = st.radio(
 st.divider()
 
 ANALISAR_EXTRAS = st.checkbox(
-    "Analisar linhas que possuem conteúdo na coluna 'Extras' (Foil, etc...)",
+    "Incluir registros com 'Extras' (Foil, Promo, etc...)",
     value=False
 )
 
