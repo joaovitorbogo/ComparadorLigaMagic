@@ -8,6 +8,38 @@ st.subheader("Compare Decks e Coleções da LigaMagic")
 
 st.divider()
 
+# =============================
+# INSTRUÇÕES
+# =============================
+
+with st.expander("📘 Como gerar o arquivo da Coleção (Excel)", expanded=False):
+    st.markdown("""
+    **Passo a passo:**
+    
+    1. Vá até **Coleção**
+    2. Clique em **Exportar**
+    3. Em **Configurações de exportação** selecione:
+       - **Padrão LigaMagic XLS**
+    4. Gere o arquivo e salve no seu computador
+    """)
+
+with st.expander("📗 Como gerar o arquivo do Deck (TXT)", expanded=False):
+    st.markdown("""
+    **Passo a passo:**
+    
+    1. Vá até o seu **Deck**
+    2. Clique em **Exportar**
+    3. Selecione:
+       - **Arquivo de texto**
+    4. Salve o arquivo no seu computador
+    """)
+
+st.divider()
+
+# =============================
+# MODO DE COMPARAÇÃO
+# =============================
+
 modo = st.radio(
     "Selecione o tipo de comparação:",
     (
@@ -115,10 +147,8 @@ if modo == "Deck (TXT) vs Coleção (XLS)":
 
     if excel_file and txt_file:
 
-        # Primeiro extrai TXT
         lista_txt = extrair_nomes_txt(txt_file)
 
-        # Testa automaticamente qual coluna do Excel combina melhor
         lista_excel_pt = extrair_nomes_excel(excel_file, "Card (PT)")
         lista_excel_en = extrair_nomes_excel(excel_file, "Card (EN)")
 
