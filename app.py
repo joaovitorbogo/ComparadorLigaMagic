@@ -1,12 +1,58 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Comparador MTG", layout="wide")
+st.set_page_config(
+    page_title="Comparador Liga Magic",
+    layout="wide"
+)
 
-st.title("Comparador de Deck vs Coleção")
+st.title("🔍 Comparador Liga Magic")
+st.subheader("Compare seu Deck (TXT) com sua Coleção (XLS)")
 
-ANALISAR_EXTRAS = st.checkbox("Analisar linhas que possuem conteúdo na coluna 'Extras'?", value=False)
+st.divider()
 
+# =============================
+# INSTRUÇÕES
+# =============================
+
+with st.expander("📘 Como gerar o arquivo da Coleção (Excel)", expanded=False):
+    st.markdown("""
+    **Passo a passo:**
+    
+    1. Vá até **Coleção**
+    2. Clique em **Exportar**
+    3. Em Configurações de exportação selecione:
+       - **Padrão LigaMagic XLS**
+    4. Gere o arquivo e salve no seu computador
+    """)
+
+with st.expander("📗 Como gerar o arquivo do Deck (TXT)", expanded=False):
+    st.markdown("""
+    **Passo a passo:**
+    
+    1. Vá até o seu **Deck**
+    2. Clique em **Exportar**
+    3. Selecione:
+       - **Arquivo de texto**
+    4. Salve o arquivo no seu computador
+    """)
+
+st.divider()
+
+# =============================
+# CONFIGURAÇÃO
+# =============================
+
+ANALISAR_EXTRAS = st.checkbox(
+    "Filtrar somente registro sem 'Extras'",
+    value=False
+)
+
+st.divider()
+
+# =============================
+# FUNÇÕES
+# =============================
 
 def normalizar(texto: str) -> str:
     return " ".join(texto.lower().strip().split())
@@ -60,6 +106,8 @@ def processar(excel_file, txt_file):
     encontrados.sort()
     nao_encontrados.sort()
 
+    st.divider()
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -71,13 +119,27 @@ def processar(excel_file, txt_file):
         st.write(encontrados)
 
     st.divider()
+    st.markdown("### 📊 Resumo")
     st.write(f"Total no TXT: {len(nomes)}")
     st.write(f"Não encontrados: {len(nao_encontrados)}")
     st.write(f"Encontrados: {len(encontrados)}")
 
 
-excel_file = st.file_uploader("Envie o Excel (.xls ou .xlsx)", type=["xls", "xlsx"])
-txt_file = st.file_uploader("Envie o TXT", type=["txt"])
+# =============================
+# UPLOAD
+# =============================
+
+st.markdown("### 📤 Envie os arquivos")
+
+excel_file = st.file_uploader(
+    "Arquivo da Coleção (.xls ou .xlsx)",
+    type=["xls", "xlsx"]
+)
+
+txt_file = st.file_uploader(
+    "Arquivo do Deck (.txt)",
+    type=["txt"]
+)
 
 if excel_file and txt_file:
     processar(excel_file, txt_file)
