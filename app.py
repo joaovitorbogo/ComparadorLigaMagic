@@ -57,21 +57,33 @@ ANALISAR_EXTRAS = st.checkbox(
 
 st.divider()
 
-
 # =============================
 # FUNÇÕES
 # =============================
 
-def normalizar(texto: str) -> str:
-    return " ".join(texto.lower().strip().split())
+def normalizar_nomes(texto: str):
+    """
+    Normaliza texto e trata cartas com dois nomes usando '//'
+    """
+    partes = texto.split("//")
+
+    nomes = []
+    for p in partes:
+        n = " ".join(p.lower().strip().split())
+        if n:
+            nomes.append(n)
+
+    return nomes
 
 
 def obter_coluna_nome(df, preferencia=None):
+
     if preferencia and preferencia in df.columns:
         return preferencia
 
     if "Card (PT)" in df.columns:
         return "Card (PT)"
+
     if "Card (EN)" in df.columns:
         return "Card (EN)"
 
@@ -79,6 +91,7 @@ def obter_coluna_nome(df, preferencia=None):
 
 
 def extrair_nomes_excel(arquivo_excel, coluna_preferida=None):
+
     df = pd.read_excel(arquivo_excel, dtype=str, engine="openpyxl")
     df = df.fillna("")
 
@@ -91,6 +104,7 @@ def extrair_nomes_excel(arquivo_excel, coluna_preferida=None):
     registros = []
 
     for _, row in df.iterrows():
+
         nome = str(row[coluna_nome]).strip()
         if not nome:
             continue
@@ -100,55 +114,80 @@ def extrair_nomes_excel(arquivo_excel, coluna_preferida=None):
         if not ANALISAR_EXTRAS and extra:
             continue
 
-        registros.append((normalizar(nome), extra))
+        nomes = normalizar_nomes(nome)
+
+        for n in nomes:
+            registros.append((n, extra))
 
     return registros
 
 
 def extrair_nomes_txt(txt_file):
+
     nomes = []
+
     linhas = txt_file.read().decode("utf-8").splitlines()
 
     for linha in linhas:
+
         linha = linha.strip()
+
         if not linha:
             continue
 
         partes = linha.split(" ", 1)
+
         if len(partes) > 1:
-            nomes.append(normalizar(partes[1]))
+
+            nomes_normalizados = normalizar_nomes(partes[1])
+
+            for n in nomes_normalizados:
+                nomes.append(n)
 
     return nomes
 
 
 def comparar_lista(lista_base, lista_comparacao):
+
     set_comparacao = set([n for n, _ in lista_comparacao])
 
     encontrados = []
     nao_encontrados = []
 
     for nome in lista_base:
+
         if nome in set_comparacao:
+
             extra = next((e for n, e in lista_comparacao if n == nome), "")
             encontrados.append((nome, extra))
+
         else:
+
             nao_encontrados.append(nome)
 
-    # Ordena: primeiro sem extra, depois com extra
-    encontrados.sort(key=lambda x: (x[1] != "", x[0]))
+    # Remove duplicações
+    encontrados = list(dict.fromkeys(encontrados))
     nao_encontrados = sorted(set(nao_encontrados))
+
+    # Ordena encontrados
+    encontrados.sort(key=lambda x: (x[1] != "", x[0]))
 
     return encontrados, nao_encontrados
 
 
 def exibir_encontrados(lista):
+
     for nome, extra in lista:
+
         if extra:
+
             st.markdown(
                 f"<span style='color:green; font-weight:600'>{nome} ({extra})</span>",
                 unsafe_allow_html=True
             )
+
         else:
+
             st.write(nome)
 
 
@@ -202,13 +241,13 @@ if modo == "Deck (TXT) vs Coleção (XLS)":
             exibir_encontrados(encontrados)
 
         st.divider()
+
         st.markdown("### 📊 Resumo")
         st.write(f"Total no Deck: {len(lista_txt)}")
         st.write(f"Não encontrados: {len(nao_encontrados)}")
         st.write(f"Encontrados: {len(encontrados)}")
 
-
-else:  # Coleção vs Coleção
+else:
 
     st.markdown("### 📤 Envie as duas coleções")
 
