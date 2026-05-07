@@ -370,3 +370,21 @@ else:
         with col2:
             st.subheader(f"✔ Em ambas ({len(encontrados)})")
             exibir_encontrados(encontrados)
+
+# =============================
+# RODAPÉ
+# =============================
+st.markdown("---")
+footer_col1, footer_col2, footer_col3 = st.columns([1, 1, 1])
+with footer_col2:
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <a href="https://github.com/joaovitorbogo" target="_blank" style="text-decoration: none; color: inherit;">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="30" style="vertical-align: middle; margin-right: 10px;">
+                <span style="font-size: 1.1rem; font-weight: 500;">Desenvolvido por joaovitorbogo</span>
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
