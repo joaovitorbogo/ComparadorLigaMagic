@@ -2,8 +2,8 @@
 
 Aplicação web feita em **Python + Streamlit** para comparar:
 
-- 📄 Deck (TXT) vs Coleção (XLS)
-- 📊 Coleção (XLS) vs Coleção (XLS)
+- 📄 Deck (TXT) vs Coleção (CSV)
+- 📊 Coleção (CSV) vs Coleção (CSV)
 
 ---
 
@@ -19,7 +19,7 @@ Este aplicativo resolve exatamente esse problema.
 
 # 🚀 Funcionalidades
 
-## 🔁 1) Deck (TXT) vs Coleção (XLS)
+## 🔁 1) Deck (TXT) vs Coleção (CSV)
 
 Permite verificar:
 
@@ -48,11 +48,9 @@ Permite comparar duas coleções e identificar:
 
 ✔ Permite incluir ou ignorar registros com **Extras**
 
-✔ Cartas com Extras:
-- Ficam no final da lista
-- Aparecem no formato:  
-  `Nome da Carta (Foil)`
-- São exibidas em **verde**
+✔ **Alerta de Falso Positivo (//):**
+O sistema detecta cartas com nomes compostos (Split cards, Adventurers, etc). Como a LigaMagic pode exportar nomes parciais, o sistema exibe um aviso quando encontra uma carta com `//`.
+*Exemplo:* Sua carta 'Brainstorm' pode ser um **'Endwalker // Brainstorm'** (skin), mas o sistema pode ter encontrado um **'Harmonized Trio // Brainstorm'** (criatura com mágica embutida).
 
 ✔ Ordenação alfabética automática
 
@@ -60,12 +58,12 @@ Permite comparar duas coleções e identificar:
 
 # 📥 Como gerar os arquivos na LigaMagic
 
-## 📊 Para gerar a Coleção (Excel)
+## 📊 Para gerar a Coleção (CSV)
 
 1. Vá até **Coleção**
 2. Clique em **Exportar**
 3. Em **Configurações de exportação**, selecione:
-   - **Padrão LigaMagic XLS**
+   - **Padrão LigaMagic CSV**
 4. Salve o arquivo
 
 ---
@@ -89,9 +87,9 @@ Você pode escolher:
 
 Quando incluídos:
 
-- Eles aparecem em verde
+- Eles aparecem com uma marcação visual
 - Ficam no final da listagem
-- Mostram a informação entre parênteses
+- Mostram a informação detalhada de cada registro
 
 ---
 
@@ -108,7 +106,6 @@ O projeto pode ser acessado em:
 - Python 3
 - Streamlit
 - Pandas
-- OpenPyXL
 
 ---
 
